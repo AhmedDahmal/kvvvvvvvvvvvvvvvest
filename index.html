@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Мобильный Кликер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .counter {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #clickButton {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            position: absolute;
+            transform: translate(-50%, -50%);
+            user-select: none;
+        }
+
+        #clickButton:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            animation: popup 0.5s ease;
+        }
+
+        @keyframes popup {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .modal p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        #closeModal {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #closeModal:hover {
+            background: #ee5a24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Мобильный Кликер</h1>
+        <div class="counter">Кликов: <span id="clickCount">0</span>/100</div>
+    </div>
+
+    <button id="clickButton">Нажми меня!</button>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <h2>🎉 Поздравляем!</h2>
+            <p>'0': '*', '1': '&', '2': '#', '3': '^', '4': '@', '5': '(', '6': ')', '7': ';', '8': ':', '9': '>'</p>
+            <button id="closeModal">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        const clickButton = document.getElementById('clickButton');
+        const clickCountElement = document.getElementById('clickCount');
+        const successModal = document.getElementById('successModal');
+        const closeModalButton = document.getElementById('closeModal');
+
+        let clickCount = 0;
+        const maxClicks = 50;
+
+        // Функция для получения случайного числа в диапазоне
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Функция для перемещения кнопки
+        function moveButton() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // Учитываем размеры кнопки при перемещении
+            const buttonWidth = clickButton.offsetWidth;
+            const buttonHeight = clickButton.offsetHeight;
+
+            // Случайные координаты с учетом границ экрана
+            const randomX = getRandomNumber(buttonWidth, windowWidth - buttonWidth);
+            const randomY = getRandomNumber(buttonHeight + 100, windowHeight - buttonHeight - 50);
+
+            // Случайный размер (от 80% до 120% от исходного)
+            const randomSize = getRandomNumber(80, 120);
+
+            // Применяем новые координаты и размер
+            clickButton.style.left = randomX + 'px';
+            clickButton.style.top = randomY + 'px';
+            clickButton.style.transform = `translate(-50%, -50%) scale(${randomSize/100})`;
+
+            // Меняем цвет фона
+            const hue = getRandomNumber(0, 360);
+            clickButton.style.background = `linear-gradient(45deg, hsl(${hue}, 70%, 60%), hsl(${(hue + 40) % 360}, 70%, 50%))`;
+        }
+
+        // Обработчик клика
+        clickButton.addEventListener('click', function() {
+            clickCount++;
+            clickCountElement.textContent = clickCount;
+
+            // Перемещаем кнопку
+            moveButton();
+
+            // Если достигли 100 кликов
+            if (clickCount === maxClicks) {
+                setTimeout(() => {
+                    successModal.style.display = 'flex';
+                }, 500);
+            }
+        });
+
+        // Закрытие модального окна
+        closeModalButton.addEventListener('click', function() {
+            successModal.style.display = 'none';
+        });
+
+        // Закрытие модального окна при клике вне его
+        successModal.addEventListener('click', function(e) {
+            if (e.target === successModal) {
+                successModal.style.display = 'none';
+            }
+        });
+
+        // Инициализация начальной позиции кнопки
+        window.addEventListener('load', function() {
+            moveButton();
+
+            // Предотвращаем долгое нажатие (контекстное меню)
+            clickButton.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        // Обработка изменения размера окна
+        window.addEventListener('resize', function() {
+            moveButton();
+        });
+    </script>
+</body>
+</html>

@@ -126,7 +126,7 @@
 <body>
     <div class="container">
         <h1>🎯 Мобильный Кликер</h1>
-        <div class="counter">Кликов: <span id="clickCount">0</span>/100</div>
+        <div class="counter">Кликов: <span id="clickCount">0</span>/50</div>
     </div>
 
     <button id="clickButton">Нажми меня!</button>
@@ -167,7 +167,7 @@
             const randomY = getRandomNumber(buttonHeight + 100, windowHeight - buttonHeight - 50);
 
             // Случайный размер (от 80% до 120% от исходного)
-            const randomSize = getRandomNumber(80, 120);
+            const randomSize = getRandomNumber(50, 150);
 
             // Применяем новые координаты и размер
             clickButton.style.left = randomX + 'px';
@@ -223,4 +223,5 @@
         });
     </script>
 </body>
+
 </html>
